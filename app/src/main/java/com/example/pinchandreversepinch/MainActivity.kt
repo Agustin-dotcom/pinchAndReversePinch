@@ -21,7 +21,30 @@ import com.example.pinchandreversepinch.ui.theme.Theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.ui.unit.IntOffset
-
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import android.content.Context
+import android.speech.tts.TextToSpeech
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import java.util.*
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +55,27 @@ class MainActivity : ComponentActivity() {
             PinchAndReversePinchTheme(colorScheme = theme) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     // Main content
+                    val context = LocalContext.current
                     var isMoved by remember { mutableStateOf(false) }
                     val offsetX by animateDpAsState(if (isMoved) 100.dp else 0.dp)
                     var darkModeIsChecked by remember { mutableStateOf(false) }
                     var protanopiaIsChecked by remember { mutableStateOf(false) }
                     var deuteranopiaIsChecked by remember { mutableStateOf(false) }
+                    val minScale = 0.8f
+                    val maxScale = 2f
+                    var selectedIndex by remember { mutableStateOf(0) }
+                    val buttons = listOf("Button 1", "Button 2", "Button 3")
+                    var scale by remember { mutableStateOf(1f) }
+                    val tts = remember {
+                        TextToSpeech(context) { status ->
+                        if (status == TextToSpeech.SUCCESS) {
+                            tts?.language = Locale.getDefault()
+                        }
+                    }}
 
+                    LaunchedEffect(selectedIndex) {
+                        tts.speak(buttons[selectedIndex], TextToSpeech.QUEUE_FLUSH, null, null)
+                    }
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -48,6 +86,51 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Text("Contenido Principal")
+
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .pointerInput(Unit) {
+                                        detectTransformGestures { _, _, zoom, _ ->
+                                            scale = (scale * zoom).coerceIn(minScale, maxScale)
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Button(
+                                        onClick = {},
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .width((200 * scale).dp)
+                                            .height((50 * scale).dp)
+                                    ) {
+                                        Text(text = "Button 1", fontSize = (16 * scale).sp)
+                                    }
+                                    Button(
+                                        onClick = {},
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .width((200 * scale).dp)
+                                            .height((50 * scale).dp)
+                                    ) {
+                                        Text(text = "Button 2", fontSize = (16 * scale).sp)
+                                    }
+                                    Button(
+                                        onClick = {},
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .width((200 * scale).dp)
+                                            .height((50 * scale).dp)
+                                    ) {
+                                        Text(text = "Button 3", fontSize = (16 * scale).sp)
+                                    }
+                                }
+                            }
                         }
                     }
 //                    Box(modifier = Modifier.size(200.dp)) {
@@ -107,8 +190,8 @@ class MainActivity : ComponentActivity() {
                                             .clickable { /* Prevent click propagation */ }
                                     ) {
                                         Column(
-                                            horizontalAlignment = Alignment.End,
-                                            verticalArrangement = Arrangement.Top,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center,
                                             modifier = Modifier.fillMaxSize()
                                         ) {
                                             Text(text = "Dark mode")
