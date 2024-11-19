@@ -3,6 +3,7 @@ package com.example.pinchandreversepinch
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,7 +18,9 @@ import androidx.compose.ui.window.Dialog
 import com.example.pinchandreversepinch.ui.theme.PinchAndReversePinchTheme
 import com.example.pinchandreversepinch.ui.theme.Theme
 //import androidx.compose.material
-import androidx.compose.material.
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.ui.unit.IntOffset
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +32,12 @@ class MainActivity : ComponentActivity() {
             PinchAndReversePinchTheme(colorScheme = theme) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     // Main content
+                    var isMoved by remember { mutableStateOf(false) }
+                    val offsetX by animateDpAsState(if (isMoved) 100.dp else 0.dp)
+                    var darkModeIsChecked by remember { mutableStateOf(false) }
+                    var protanopiaIsChecked by remember { mutableStateOf(false) }
+                    var deuteranopiaIsChecked by remember { mutableStateOf(false) }
+
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -41,7 +50,19 @@ class MainActivity : ComponentActivity() {
                             Text("Contenido Principal")
                         }
                     }
-
+//                    Box(modifier = Modifier.size(200.dp)) {
+//                        Button(
+//                            onClick = { isMoved = !isMoved },
+//                            modifier = Modifier.offset { IntOffset(offsetX.roundToPx(), 0) }
+//                        ) {
+//                            Text("Toggle")
+//                        }
+//                    }
+//                    Switch(
+//                        checked = darkModeIsChecked,
+//                        onCheckedChange = { darkModeIsChecked = it }
+//                    )
+//                    Text(text = if (darkModeIsChecked) "Switch is ON" else "Switch is OFF")
                     // Menu button
                     IconButton(
                         onClick = { isDrawerOpen = true },
@@ -68,46 +89,91 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .fillMaxWidth()
-                                        .align(Alignment.TopEnd)
+                                        .align(Alignment.Center)
                                         .background(Color.Transparent)
                                 ) {
                                     Spacer(
                                         modifier = Modifier
                                             .weight(0.3f)
-                                            .fillMaxHeight()
+                                            .fillMaxSize()
                                             .clickable { isDrawerOpen = false }
                                     )
                                     Box(
                                         modifier = Modifier
                                             .weight(0.7f)
                                             .fillMaxHeight()
-                                            .background(Color.White, RoundedCornerShape(4.dp))
+
+                                            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(4.dp))
                                             .clickable { /* Prevent click propagation */ }
                                     ) {
                                         Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.End,
+                                            verticalArrangement = Arrangement.Top,
                                             modifier = Modifier.fillMaxSize()
                                         ) {
-                                            Button(
-                                                onClick = { theme = Theme.Light },
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                                )
-                                            ) {
-                                                Text("Modo Claro")
-                                            }
-                                            Spacer(modifier = Modifier.height(16.dp))
-                                            Button(
-                                                onClick = { theme = Theme.Dark },
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                                )
-                                            ) {
-                                                Text("Modo Oscuro")
-                                            }
+                                            Text(text = "Dark mode")
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Switch(
+                                                checked = darkModeIsChecked,
+                                                onCheckedChange = {
+                                                    darkModeIsChecked = it
+                                                    if(theme == Theme.Light)
+                                                        theme = Theme.Dark
+                                                    else
+                                                        theme = Theme.Light
+                                                }
+                                            )
+//                                            Button(
+//                                                onClick = { theme = Theme.Light },
+//                                                colors = ButtonDefaults.buttonColors(
+//                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+//                                                )
+//                                            ) {
+//                                                Text("Modo Claro")
+//                                            }
+//                                            Spacer(modifier = Modifier.height(16.dp))
+//                                            Button(
+//                                                onClick = { theme = Theme.Dark },
+//                                                colors = ButtonDefaults.buttonColors(
+//                                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+//                                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+//                                                )
+//                                            ) {
+//                                                Text("Modo Oscuro")
+//                                            }
+                                            Text(text = "Protanopia")
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Switch(
+                                                checked = protanopiaIsChecked,
+                                                onCheckedChange = {
+                                                    protanopiaIsChecked = it
+                                                    if(!darkModeIsChecked && protanopiaIsChecked)
+                                                        theme = Theme.lightProtanopia
+                                                    else if (darkModeIsChecked && protanopiaIsChecked)
+                                                            theme = Theme.DarkProtanopia
+                                                        else if (!darkModeIsChecked && !protanopiaIsChecked)
+                                                                theme = Theme.Light
+                                                            else if(darkModeIsChecked && !protanopiaIsChecked)
+                                                                    theme = Theme.Dark
+                                                }
+                                            )
+                                            Text(text = "Deuteranopia")
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Switch(
+                                                checked = deuteranopiaIsChecked,
+                                                onCheckedChange = {
+                                                    deuteranopiaIsChecked = it
+                                                    if(!darkModeIsChecked && deuteranopiaIsChecked)
+                                                        theme = Theme.lightDeuteranopia
+                                                    else if (darkModeIsChecked && deuteranopiaIsChecked)
+                                                            theme = Theme.DarkDeuteranopia
+                                                        else if (!darkModeIsChecked && !deuteranopiaIsChecked)
+                                                                theme = Theme.Light
+                                                            else if(darkModeIsChecked && !deuteranopiaIsChecked)
+                                                                    theme = Theme.Dark
+                                                }
+                                            )
                                             // Añade más botones aquí
                                         }
                                     }
