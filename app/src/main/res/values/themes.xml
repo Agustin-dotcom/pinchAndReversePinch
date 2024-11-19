@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.PinchAndReversePinch" parent="Theme.AppCompat.Light.DarkActionBar" />
+    <!-- Tema para Protanopía -->
+    <style name="Theme.App.Protanopia" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary_protanopia</item>
+        <item name="colorAccent">@color/colorAccent_protanopia</item>
+        <!-- Otros colores específicos para protanopía -->
+    </style>
+
+    <!-- Tema para Tritanopía -->
+    <style name="Theme_App_Tritanopia" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary_deuteranopia</item>
+        <item name="colorAccent">@color/colorAccent_deuteranopia</item>
+        <!-- Otros colores específicos para deuteranopía -->
+    </style>
+    <!-- Tema para Deuteranopía -->
+    <style name="Theme_App_Achromatopsia" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary_deuteranopia</item>
+        <item name="colorAccent">@color/colorAccent_deuteranopia</item>
+        <!-- Otros colores específicos para deuteranopía -->
+    </style>
+
+    <!-- Tema para Deuteranopía -->
+    <style name="Theme_App_Deuteranopia" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary_deuteranopia</item>
+        <item name="colorAccent">@color/colorAccent_deuteranopia</item>
+        <!-- Otros colores específicos para deuteranopía -->
+    </style>
+    <!-- Y así sucesivamente para otros tipos -->
+    <!-- Modo Claro Genérico -->
+
+
+</resources>
