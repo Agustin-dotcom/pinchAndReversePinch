@@ -250,10 +250,7 @@ class MainActivity : ComponentActivity() {
                                                 checked = darkModeIsChecked,
                                                 onCheckedChange = {
                                                     darkModeIsChecked = it
-                                                    if(!darkModeIsChecked)
-                                                        theme = Theme.Dark
-                                                    else
-                                                        theme = Theme.Light
+                                                    updateTheme()
                                                 },
                                                 colors = SwitchDefaults.colors(
 
