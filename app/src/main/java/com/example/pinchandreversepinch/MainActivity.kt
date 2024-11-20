@@ -38,14 +38,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.*
 class MainActivity : ComponentActivity() {
+    private var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -61,6 +61,8 @@ class MainActivity : ComponentActivity() {
                     var darkModeIsChecked by remember { mutableStateOf(false) }
                     var protanopiaIsChecked by remember { mutableStateOf(false) }
                     var deuteranopiaIsChecked by remember { mutableStateOf(false) }
+                    var tritanopiaIsChecked by remember { mutableStateOf(false) }
+                    //var theme by remember { mutableStateOf(Theme.Light) }
                     val minScale = 0.8f
                     val maxScale = 2f
                     var selectedIndex by remember { mutableStateOf(0) }
@@ -72,6 +74,25 @@ class MainActivity : ComponentActivity() {
                             tts?.language = Locale.getDefault()
                         }
                     }}
+                    fun updateTheme() {
+                        theme = when {
+                            // Protanopía
+                            protanopiaIsChecked && darkModeIsChecked -> Theme.DarkProtanopia
+                            protanopiaIsChecked && !darkModeIsChecked -> Theme.lightProtanopia
+
+                            // Deuteranopía
+                            deuteranopiaIsChecked && darkModeIsChecked -> Theme.DarkDeuteranopia
+                            deuteranopiaIsChecked && !darkModeIsChecked -> Theme.lightDeuteranopia
+
+                            // Tritanopía
+                            tritanopiaIsChecked && darkModeIsChecked -> Theme.DarkTritanopia
+                            tritanopiaIsChecked && !darkModeIsChecked -> Theme.lightTritanopia
+
+                            // Modo normal
+                            darkModeIsChecked -> Theme.Dark
+                            else -> Theme.Light
+                        }
+                    }
 
                     LaunchedEffect(selectedIndex) {
                         tts.speak(buttons[selectedIndex], TextToSpeech.QUEUE_FLUSH, null, null)
@@ -107,7 +128,13 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier
                                             .padding(8.dp)
                                             .width((200 * scale).dp)
-                                            .height((50 * scale).dp)
+                                            .height((50 * scale).dp),
+                                        colors = ButtonColors(
+                                            MaterialTheme.colorScheme.onPrimaryContainer,
+                                            MaterialTheme.colorScheme.onPrimary,
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.colorScheme.onSecondary
+                                            )
                                     ) {
                                         Text(text = "Button 1", fontSize = (16 * scale).sp)
                                     }
@@ -116,7 +143,13 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier
                                             .padding(8.dp)
                                             .width((200 * scale).dp)
-                                            .height((50 * scale).dp)
+                                            .height((50 * scale).dp),
+                                        colors = ButtonColors(
+                                            MaterialTheme.colorScheme.onPrimaryContainer,
+                                            MaterialTheme.colorScheme.onPrimary,
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.colorScheme.onSecondary
+                                        )
                                     ) {
                                         Text(text = "Button 2", fontSize = (16 * scale).sp)
                                     }
@@ -125,7 +158,13 @@ class MainActivity : ComponentActivity() {
                                         modifier = Modifier
                                             .padding(8.dp)
                                             .width((200 * scale).dp)
-                                            .height((50 * scale).dp)
+                                            .height((50 * scale).dp),
+                                        colors = ButtonColors(
+                                            MaterialTheme.colorScheme.onPrimaryContainer,
+                                            MaterialTheme.colorScheme.onPrimary,
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            MaterialTheme.colorScheme.onSecondary
+                                        )
                                     ) {
                                         Text(text = "Button 3", fontSize = (16 * scale).sp)
                                     }
@@ -156,7 +195,11 @@ class MainActivity : ComponentActivity() {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = "Menu",
-                            tint = if (theme == Theme.Light) Color.Black else Color.White
+                            tint =
+                            if (!darkModeIsChecked)
+                                Color.Black
+                            else
+                                Color.White
                         )
                     }
 
@@ -194,17 +237,31 @@ class MainActivity : ComponentActivity() {
                                             verticalArrangement = Arrangement.Center,
                                             modifier = Modifier.fillMaxSize()
                                         ) {
-                                            Text(text = "Dark mode")
+                                            Text(
+                                                text = "Dark mode",
+                                                color =
+                                                if(darkModeIsChecked)
+                                                    Color.White
+                                                else
+                                                    Color.Black
+                                                )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Switch(
                                                 checked = darkModeIsChecked,
                                                 onCheckedChange = {
                                                     darkModeIsChecked = it
-                                                    if(theme == Theme.Light)
+                                                    if(!darkModeIsChecked)
                                                         theme = Theme.Dark
                                                     else
                                                         theme = Theme.Light
-                                                }
+                                                },
+                                                colors = SwitchDefaults.colors(
+
+                                                    checkedTrackColor = Color.Gray
+                                                    , checkedThumbColor = Color.White
+
+                                                )
+
                                             )
 //                                            Button(
 //                                                onClick = { theme = Theme.Light },
@@ -225,37 +282,71 @@ class MainActivity : ComponentActivity() {
 //                                            ) {
 //                                                Text("Modo Oscuro")
 //                                            }
-                                            Text(text = "Protanopia")
+                                            Text(
+                                                text = "Protanopia",
+                                                color =
+                                                if(darkModeIsChecked)
+                                                    Color.White
+                                                else
+                                                    Color.Black
+                                                )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Switch(
                                                 checked = protanopiaIsChecked,
                                                 onCheckedChange = {
                                                     protanopiaIsChecked = it
-                                                    if(!darkModeIsChecked && protanopiaIsChecked)
-                                                        theme = Theme.lightProtanopia
-                                                    else if (darkModeIsChecked && protanopiaIsChecked)
-                                                            theme = Theme.DarkProtanopia
-                                                        else if (!darkModeIsChecked && !protanopiaIsChecked)
-                                                                theme = Theme.Light
-                                                            else if(darkModeIsChecked && !protanopiaIsChecked)
-                                                                    theme = Theme.Dark
-                                                }
+                                                    updateTheme()
+                                                },
+                                                colors = SwitchDefaults.colors(
+
+                                                    checkedTrackColor = Color.Gray
+                                                    , checkedThumbColor = Color.White
+
+                                                )
                                             )
-                                            Text(text = "Deuteranopia")
+                                            Text(
+                                                text = "Deuteranopia",
+                                                color =
+                                                if(darkModeIsChecked)
+                                                    Color.White
+                                                else
+                                                    Color.Black
+                                            )
                                             Spacer(modifier = Modifier.width(8.dp))
                                             Switch(
                                                 checked = deuteranopiaIsChecked,
                                                 onCheckedChange = {
                                                     deuteranopiaIsChecked = it
-                                                    if(!darkModeIsChecked && deuteranopiaIsChecked)
-                                                        theme = Theme.lightDeuteranopia
-                                                    else if (darkModeIsChecked && deuteranopiaIsChecked)
-                                                            theme = Theme.DarkDeuteranopia
-                                                        else if (!darkModeIsChecked && !deuteranopiaIsChecked)
-                                                                theme = Theme.Light
-                                                            else if(darkModeIsChecked && !deuteranopiaIsChecked)
-                                                                    theme = Theme.Dark
-                                                }
+                                                   updateTheme()
+                                                },
+                                                colors = SwitchDefaults.colors(
+
+                                                    checkedTrackColor = Color.Gray
+                                                    , checkedThumbColor = Color.White
+
+                                                )
+                                            )
+                                            Text(
+                                                text = "Tritanopia",
+                                                color =
+                                                if(darkModeIsChecked)
+                                                    Color.White
+                                                else
+                                                    Color.Black
+                                                )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Switch(
+                                                checked = tritanopiaIsChecked,
+                                                onCheckedChange = {
+                                                    tritanopiaIsChecked = it
+                                                    updateTheme()
+                                                },
+                                                colors = SwitchDefaults.colors(
+
+                                                    checkedTrackColor = Color.Gray
+                                                    , checkedThumbColor = Color.White
+
+                                                )
                                             )
                                             // Añade más botones aquí
                                         }
